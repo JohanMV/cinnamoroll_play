@@ -3,6 +3,28 @@ import { useEffect, useState } from 'react'
 const LOADING_PROGRESS_EVENT = 'cinnamoroll:loading-progress'
 const FADE_DURATION_MS = 700
 
+const requestFullscreen = () => {
+  const el = document.documentElement
+
+  try {
+    let fullscreenRequest: Promise<void> | undefined
+
+    if (el.requestFullscreen) {
+      fullscreenRequest = el.requestFullscreen()
+    } else if ((el as any).webkitRequestFullscreen) {
+      fullscreenRequest = (el as any).webkitRequestFullscreen() // Safari/iOS
+    } else if ((el as any).mozRequestFullScreen) {
+      fullscreenRequest = (el as any).mozRequestFullScreen() // Firefox
+    } else if ((el as any).msRequestFullscreen) {
+      fullscreenRequest = (el as any).msRequestFullscreen() // IE/Edge
+    }
+
+    void fullscreenRequest?.catch(() => undefined)
+  } catch {
+    // Some mobile browsers do not support fullscreen; loading continues normally.
+  }
+}
+
 interface LoadingScreenProps {
   isGameReady: boolean
 }
@@ -10,6 +32,7 @@ interface LoadingScreenProps {
 export default function LoadingScreen({ isGameReady }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+  const isMobile = 'ontouchstart' in window
 
   useEffect(() => {
     const handleProgress = (event: Event) => {
@@ -52,6 +75,17 @@ export default function LoadingScreen({ isGameReady }: LoadingScreenProps) {
           Loading... {progress}%
         </p>
       </div>
+      {isMobile && (
+        <button
+          type="button"
+          onClick={requestFullscreen}
+          className="fixed bottom-10 left-1/2 z-10 flex -translate-x-1/2 animate-pulse flex-col items-center whitespace-nowrap rounded-full border border-white/80 bg-white/85 px-6 py-3 text-sky-950 shadow-[0_6px_24px_rgba(14,116,144,0.28)] backdrop-blur-sm transition hover:bg-white active:scale-95"
+          aria-label="Jugar en pantalla completa"
+        >
+          <span className="text-sm font-extrabold tracking-wide">&#9654; JUGAR EN PANTALLA COMPLETA</span>
+          <span className="mt-0.5 text-xs font-semibold text-sky-800/80">Recomendado para m&oacute;vil</span>
+        </button>
+      )}
     </section>
   )
 }
