@@ -7,6 +7,9 @@ const PLAYER_SCALE = 0.40 //Tamaño de Cinamonroll
 const PLAYER_SPEED = 200
 const CAMERA_LERP = 0.1
 const GAME_READY_EVENT = 'cinnamoroll:game-ready'
+const LOADING_PROGRESS_EVENT = 'cinnamoroll:loading-progress'
+const MAP_LEVEL_1_PATH = './assets/map_level_1.webp'
+const MAP_LEVEL_2_PATH = './assets/map_level_2.webp'
 const JOYSTICK_OUTER_RADIUS = 80
 const JOYSTICK_KNOB_RADIUS = 30
 const JOYSTICK_TRAVEL_RADIUS = 50
@@ -23,13 +26,25 @@ export default class GameScene extends Phaser.Scene {
     super('GameScene')
   }
 
+  preload(): void {
+    this.load.on(Phaser.Loader.Events.PROGRESS, (value: number) => {
+      window.dispatchEvent(new CustomEvent<number>(LOADING_PROGRESS_EVENT, { detail: value }))
+    })
+
+    this.load.image('map_level1', MAP_LEVEL_1_PATH)
+    this.load.image('map_level2', MAP_LEVEL_2_PATH)
+  }
+
   create(): void {
     this.createAnimations()
 
+    const mapKey = this.registry.get('mapKey') as string
+    const mapImage = mapKey === 'level2' ? 'map_level2' : 'map_level1'
+
     // The background fills the map world at its native aspect ratio.
     this.add
-      .image(MAP_WIDTH / 2, MAP_HEIGHT / 2, 'level-map')
-      .setDisplaySize(MAP_WIDTH, MAP_HEIGHT)
+      .image(0, 0, mapImage)
+      .setOrigin(0, 0)
       .setDepth(0)
 
     this.physics.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)

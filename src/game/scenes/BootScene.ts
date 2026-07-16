@@ -1,7 +1,6 @@
 import Phaser from 'phaser'
 
 const LOADING_PROGRESS_EVENT = 'cinnamoroll:loading-progress'
-const MAP_ASSET_PATH = './assets/map_level_1.webp'
 const WALK_SHEET_PATH = './assets/cinna-walk.png'
 const IDLE_SHEET_PATH = './assets/cinna-idle.png'
 const SPRITE_FRAME_SIZE = 313
@@ -17,7 +16,6 @@ export default class BootScene extends Phaser.Scene {
       window.dispatchEvent(new CustomEvent<number>(LOADING_PROGRESS_EVENT, { detail: value }))
     })
 
-    this.load.image('level-map', MAP_ASSET_PATH)
     this.load.spritesheet('cinna-walk', WALK_SHEET_PATH, {
       frameWidth: SPRITE_FRAME_SIZE,
       frameHeight: SPRITE_FRAME_SIZE,

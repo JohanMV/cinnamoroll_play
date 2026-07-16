@@ -4,8 +4,11 @@ import LoadingScreen from './ui/LoadingScreen'
 
 const GAME_READY_EVENT = 'cinnamoroll:game-ready'
 
+export type MapKey = 'level1' | 'level2'
+
 export default function App() {
   const [isGameReady, setIsGameReady] = useState(false)
+  const [mapKey, setMapKey] = useState<MapKey | null>(null)
 
   useEffect(() => {
     const handleGameReady = () => setIsGameReady(true)
@@ -16,8 +19,8 @@ export default function App() {
 
   return (
     <main className="relative h-full w-full bg-black">
-      <PhaserGame />
-      <LoadingScreen isGameReady={isGameReady} />
+      {mapKey && <PhaserGame mapKey={mapKey} />}
+      <LoadingScreen isGameReady={isGameReady} onMapSelect={setMapKey} />
     </main>
   )
 }
